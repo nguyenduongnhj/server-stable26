@@ -74,6 +74,7 @@ use OCP\IURLGenerator;
 use OCP\IUserSession;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use function OCP\Log\logger;
 
 /**
  * @deprecated 20.0.0
@@ -403,7 +404,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 	}
 
 	/**
-	 * @deprecated use the ILogger instead
+	 * @deprecated use the LoggerInterface instead
 	 * @param string $message
 	 * @param string $level
 	 * @return mixed
@@ -426,7 +427,7 @@ class DIContainer extends SimpleContainer implements IAppContainer {
 				$level = ILogger::ERROR;
 				break;
 		}
-		\OCP\Util::writeLog($this->getAppName(), $message, $level);
+		logger($this->getAppName())->log($level, $message);
 	}
 
 	/**
