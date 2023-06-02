@@ -26,6 +26,7 @@
  */
 namespace OCA\WorkflowEngine\Tests;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\L10N\L10N;
 use OCA\WorkflowEngine\Entity\File;
 use OCA\WorkflowEngine\Helper\ScopeContext;
@@ -94,7 +95,7 @@ class ManagerTest extends TestCase {
 				return vsprintf($text, $parameters);
 			});
 
-		$this->legacyDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->legacyDispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->logger = $this->createMock(ILogger::class);
 		$this->session = $this->createMock(IUserSession::class);
 		$this->dispatcher = $this->createMock(IEventDispatcher::class);
@@ -535,8 +536,9 @@ class ManagerTest extends TestCase {
 		$this->legacyDispatcher->expects($this->once())
 			->method('dispatch')
 			->with('OCP\WorkflowEngine::registerEntities', $this->anything())
-			->willReturnCallback(function () use ($extraEntity) {
+			->willReturnCallback(function ($eventName, $event) use ($extraEntity) {
 				$this->manager->registerEntity($extraEntity);
+				return $event;
 			});
 
 		$entities = $this->manager->getEntitiesList();

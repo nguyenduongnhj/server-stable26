@@ -13,6 +13,7 @@ namespace Test\App;
 
 use OC\App\AppManager;
 use OC\AppConfig;
+use OC\EventDispatcher\SymfonyAdapter;
 use OCP\App\AppPathNotFoundException;
 use OCP\App\Events\AppDisableEvent;
 use OCP\App\Events\AppEnableEvent;
@@ -114,7 +115,7 @@ class AppManagerTest extends TestCase {
 		$this->appConfig = $this->getAppConfig();
 		$this->cacheFactory = $this->createMock(ICacheFactory::class);
 		$this->cache = $this->createMock(ICache::class);
-		$this->legacyEventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->legacyEventDispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->cacheFactory->expects($this->any())

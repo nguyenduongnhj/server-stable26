@@ -10,6 +10,7 @@
 namespace Test\User;
 
 use OC\AllConfig;
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Files\Mount\ObjectHomeMountProvider;
 use OC\Hooks\PublicEmitter;
 use OC\User\User;
@@ -38,7 +39,7 @@ class UserTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->dispatcher = $this->createMock(SymfonyAdapter::class);
 	}
 
 	public function testDisplayName() {

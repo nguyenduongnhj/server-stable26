@@ -31,6 +31,7 @@
  */
 namespace OCA\Files_Trashbin\Tests;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Files\Filesystem;
 use OC\Files\Storage\Common;
 use OC\Files\Storage\Local;
@@ -607,7 +608,7 @@ class StorageTest extends \Test\TestCase {
 		$userManager->expects($this->any())
 			->method('userExists')->willReturn($userExists);
 		$logger = $this->getMockBuilder(ILogger::class)->getMock();
-		$eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$eventDispatcher = $this->createMock(SymfonyAdapter::class);
 		$rootFolder = $this->createMock(IRootFolder::class);
 		$userFolder = $this->createMock(Folder::class);
 		$node = $this->getMockBuilder(Node::class)->disableOriginalConstructor()->getMock();

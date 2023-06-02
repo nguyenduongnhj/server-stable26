@@ -23,6 +23,7 @@
 
 namespace Test\Group;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Group\Database;
 use OC\User\User;
 use OC\User\Manager;
@@ -52,7 +53,7 @@ class ManagerTest extends TestCase {
 		parent::setUp();
 
 		$this->userManager = $this->createMock(Manager::class);
-		$this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->dispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->logger = $this->createMock(LoggerInterface::class);
 		$this->cache = $this->createMock(ICacheFactory::class);
 	}

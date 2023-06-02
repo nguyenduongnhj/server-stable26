@@ -9,6 +9,7 @@
 
 namespace Test\Group;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\User\User;
 use OCP\IUser;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,7 +21,7 @@ class GroupTest extends \Test\TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->dispatcher = $this->createMock(SymfonyAdapter::class);
 	}
 
 	/**

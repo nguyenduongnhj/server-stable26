@@ -27,6 +27,7 @@ use OC\Authentication\Token\IProvider as TokenProvider;
 use OC\Authentication\TwoFactorAuth\Manager;
 use OC\Authentication\TwoFactorAuth\MandatoryTwoFactor;
 use OC\Authentication\TwoFactorAuth\ProviderLoader;
+use OC\EventDispatcher\SymfonyAdapter;
 use OCP\Activity\IEvent;
 use OCP\Activity\IManager;
 use OCP\AppFramework\Utility\ITimeFactory;
@@ -103,7 +104,7 @@ class ManagerTest extends TestCase {
 		$this->tokenProvider = $this->createMock(TokenProvider::class);
 		$this->timeFactory = $this->createMock(ITimeFactory::class);
 		$this->newDispatcher = $this->createMock(IEventDispatcher::class);
-		$this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->eventDispatcher = $this->createMock(SymfonyAdapter::class);
 
 		$this->manager = new Manager(
 			$this->providerLoader,

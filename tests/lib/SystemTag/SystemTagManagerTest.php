@@ -10,6 +10,7 @@
 
 namespace Test\SystemTag;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\SystemTag\SystemTagManager;
 use OC\SystemTag\SystemTagObjectMapper;
 use OCP\IDBConnection;
@@ -52,8 +53,7 @@ class SystemTagManagerTest extends TestCase {
 
 		$this->connection = \OC::$server->getDatabaseConnection();
 
-		$this->dispatcher = $this->getMockBuilder('Symfony\Component\EventDispatcher\EventDispatcherInterface')
-			->getMock();
+		$this->dispatcher = $this->createMock(SymfonyAdapter::class);
 
 		$this->groupManager = $this->getMockBuilder(IGroupManager::class)->getMock();
 

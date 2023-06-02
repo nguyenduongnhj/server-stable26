@@ -26,12 +26,14 @@ declare(strict_types=1);
 namespace Test\AppFramework\Middleware;
 
 use OC\AppFramework\Middleware\AdditionalScriptsMiddleware;
+use OC\EventDispatcher\SymfonyAdapter;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\Events\BeforeTemplateRenderedEvent;
 use OCP\AppFramework\Http\Response;
 use OCP\AppFramework\Http\StandaloneTemplateResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\PublicShareController;
+use OCP\EventDispatcher\Event;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IUserSession;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -54,7 +56,7 @@ class AdditionalScriptsMiddlewareTest extends \Test\TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		$this->legacyDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->legacyDispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->userSession = $this->createMock(IUserSession::class);
 		$this->dispatcher = $this->createMock(IEventDispatcher::class);
 		$this->middleWare = new AdditionalScriptsMiddleware(
@@ -93,7 +95,7 @@ class AdditionalScriptsMiddlewareTest extends \Test\TestCase {
 			->method('dispatch')
 			->willReturnCallback(function ($eventName) {
 				if ($eventName === TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS) {
-					return;
+					return new Event();
 				}
 
 				$this->fail('Wrong event dispatched');
@@ -118,7 +120,7 @@ class AdditionalScriptsMiddlewareTest extends \Test\TestCase {
 			->method('dispatch')
 			->willReturnCallback(function ($eventName) {
 				if ($eventName === TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS) {
-					return;
+					return new Event();
 				}
 
 				$this->fail('Wrong event dispatched');
@@ -147,7 +149,7 @@ class AdditionalScriptsMiddlewareTest extends \Test\TestCase {
 				if ($eventName === TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS ||
 					$eventName === TemplateResponse::EVENT_LOAD_ADDITIONAL_SCRIPTS_LOGGEDIN) {
 					$events[] = $eventName;
-					return;
+					return new Event();
 				}
 
 				$this->fail('Wrong event dispatched');

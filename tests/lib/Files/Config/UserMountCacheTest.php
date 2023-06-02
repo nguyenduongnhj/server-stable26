@@ -9,6 +9,7 @@
 namespace Test\Files\Config;
 
 use OC\DB\QueryBuilder\Literal;
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Files\Mount\MountPoint;
 use OC\Files\Storage\Storage;
 use OCP\Cache\CappedMemoryCache;
@@ -21,7 +22,6 @@ use OCP\IConfig;
 use OCP\IDBConnection;
 use OCP\IUserManager;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Test\TestCase;
 use Test\Util\User\Dummy;
 
@@ -62,7 +62,7 @@ class UserMountCacheTest extends TestCase {
 			->expects($this->any())
 			->method('getAppValue')
 			->willReturnArgument(2);
-		$this->userManager = new Manager($config, $this->createMock(EventDispatcherInterface::class), $this->createMock(ICacheFactory::class), $this->createMock(IEventDispatcher::class));
+		$this->userManager = new Manager($config, $this->createMock(SymfonyAdapter::class), $this->createMock(ICacheFactory::class), $this->createMock(IEventDispatcher::class));
 		$userBackend = new Dummy();
 		$userBackend->createUser('u1', '');
 		$userBackend->createUser('u2', '');

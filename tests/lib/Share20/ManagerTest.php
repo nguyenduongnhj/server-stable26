@@ -21,6 +21,7 @@
 
 namespace Test\Share20;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Files\Mount\MoveableMount;
 use OC\KnownUser\KnownUserService;
 use OC\Share20\DefaultShareProvider;
@@ -120,7 +121,7 @@ class ManagerTest extends \Test\TestCase {
 		$this->groupManager = $this->createMock(IGroupManager::class);
 		$this->userManager = $this->createMock(IUserManager::class);
 		$this->rootFolder = $this->createMock(IRootFolder::class);
-		$this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->eventDispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->mailer = $this->createMock(IMailer::class);
 		$this->urlGenerator = $this->createMock(IURLGenerator::class);
 		$this->defaults = $this->createMock(\OC_Defaults::class);
@@ -258,7 +259,7 @@ class ManagerTest extends \Test\TestCase {
 					$this->callBack(function (GenericEvent $e) use ($share) {
 						return $e->getSubject() === $share &&
 							$e->getArgument('deletedShares') === [$share];
-					})]
+					})],
 			);
 
 		$manager->deleteShare($share);
@@ -367,7 +368,7 @@ class ManagerTest extends \Test\TestCase {
 					$this->callBack(function (GenericEvent $e) use ($share1, $share2, $share3) {
 						return $e->getSubject() === $share1 &&
 							$e->getArgument('deletedShares') === [$share3, $share2, $share1];
-					})]
+					})],
 			);
 
 		$manager->deleteShare($share1);
@@ -401,7 +402,7 @@ class ManagerTest extends \Test\TestCase {
 				'OCP\Share::postUnshareFromSelf',
 				$this->callBack(function (GenericEvent $e) use ($share) {
 					return $e->getSubject() === $share;
-				})
+				}),
 			);
 
 		$manager->deleteFromSelf($share, $recipientId);
@@ -550,6 +551,7 @@ class ManagerTest extends \Test\TestCase {
 				$this->assertInstanceOf(ValidatePasswordPolicyEvent::class, $event);
 				/** @var ValidatePasswordPolicyEvent $event */
 				$this->assertSame('password', $event->getPassword());
+				return $event;
 			}
 			);
 
@@ -2525,10 +2527,11 @@ class ManagerTest extends \Test\TestCase {
 			->method('dispatch')
 			->with(
 				$this->equalTo('OCP\Share::preShare'),
-				$this->isInstanceOf(GenericEvent::class)
+				$this->isInstanceOf(GenericEvent::class),
 			)->willReturnCallback(function ($name, GenericEvent $e) {
 				$e->setArgument('error', 'I won\'t let you share!');
 				$e->stopPropagation();
+				return $e;
 			}
 			);
 

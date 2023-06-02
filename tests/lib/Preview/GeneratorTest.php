@@ -23,6 +23,7 @@
 
 namespace Test\Preview;
 
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\Preview\Generator;
 use OC\Preview\GeneratorHelper;
 use OCP\EventDispatcher\IEventDispatcher;
@@ -68,7 +69,7 @@ class GeneratorTest extends \Test\TestCase {
 		$this->appData = $this->createMock(IAppData::class);
 		$this->helper = $this->createMock(GeneratorHelper::class);
 		$this->eventDispatcher = $this->createMock(IEventDispatcher::class);
-		$this->legacyEventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->legacyEventDispatcher = $this->createMock(SymfonyAdapter::class);
 
 		$this->generator = new Generator(
 			$this->config,

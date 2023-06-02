@@ -38,6 +38,7 @@ use bantu\IniGetWrapper\IniGetWrapper;
 use Doctrine\DBAL\Platforms\SqlitePlatform;
 use OC;
 use OC\DB\Connection;
+use OC\EventDispatcher\SymfonyAdapter;
 use OC\IntegrityCheck\Checker;
 use OC\MemoryInfo;
 use OC\Security\SecureRandom;
@@ -137,7 +138,7 @@ class CheckSetupControllerTest extends TestCase {
 			->willReturnCallback(function ($message, array $replace) {
 				return vsprintf($message, $replace);
 			});
-		$this->dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)
+		$this->dispatcher = $this->getMockBuilder(SymfonyAdapter::class)
 			->disableOriginalConstructor()->getMock();
 		$this->checker = $this->getMockBuilder('\OC\IntegrityCheck\Checker')
 				->disableOriginalConstructor()->getMock();

@@ -26,6 +26,7 @@ namespace Test\Accounts;
 
 use OC\Accounts\Account;
 use OC\Accounts\AccountManager;
+use OC\EventDispatcher\SymfonyAdapter;
 use OCA\Settings\BackgroundJobs\VerifyUserData;
 use OCP\Accounts\IAccountManager;
 use OCP\BackgroundJob\IJobList;
@@ -86,7 +87,7 @@ class AccountManagerTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+		$this->eventDispatcher = $this->createMock(SymfonyAdapter::class);
 		$this->connection = \OC::$server->get(IDBConnection::class);
 		$this->config = $this->createMock(IConfig::class);
 		$this->jobList = $this->createMock(IJobList::class);
@@ -511,11 +512,12 @@ class AccountManagerTest extends TestCase {
 						$this->assertInstanceOf(GenericEvent::class, $event);
 						$this->assertSame($user, $event->getSubject());
 						$this->assertSame($newData, $event->getArguments());
+						return $event;
 					}
 				);
 		}
 
-		$this->invokePrivate($accountManager, 'updateUser', [$user, $newData, $oldData]);
+		self::invokePrivate($accountManager, 'updateUser', [$user, $newData, $oldData]);
 	}
 
 	public function dataTrueFalse(): array {
