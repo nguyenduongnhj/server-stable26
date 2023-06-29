@@ -153,9 +153,6 @@ class Crypt {
 		return openssl_pkey_new($config);
 	}
 
-	/**
-	 * get openSSL Config
-	 */
 	private function getOpenSSLConfig(): array {
 		$config = ['private_key_bits' => 4096];
 		$config = array_merge(
@@ -532,11 +529,8 @@ class Crypt {
 	 * split meta data from encrypted file
 	 * Note: for now, we assume that the meta data always start with the iv
 	 *       followed by the signature, if available
-	 *
-	 * @param string $catFile
-	 * @param string $cipher
 	 */
-	private function splitMetaData($catFile, $cipher): array {
+	private function splitMetaData(string $catFile, string $cipher): array {
 		if ($this->hasSignature($catFile, $cipher)) {
 			$catFile = $this->removePadding($catFile, true);
 			$meta = substr($catFile, -93);
@@ -561,11 +555,9 @@ class Crypt {
 	/**
 	 * check if encrypted block is signed
 	 *
-	 * @param string $catFile
-	 * @param string $cipher
 	 * @throws GenericEncryptionException
 	 */
-	private function hasSignature($catFile, $cipher): bool {
+	private function hasSignature(string $catFile, string $cipher): bool {
 		$skipSignatureCheck = $this->config->getSystemValueBool('encryption_skip_signature_check', false);
 
 		$meta = substr($catFile, -93);
