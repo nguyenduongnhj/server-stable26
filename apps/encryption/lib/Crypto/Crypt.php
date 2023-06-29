@@ -214,13 +214,9 @@ class Crypt {
 	}
 
 	/**
-	 * @param string $plainContent
-	 * @param string $iv
-	 * @param string $passPhrase
-	 * @param string $cipher
 	 * @throws EncryptionFailedException
 	 */
-	private function encrypt($plainContent, $iv, $passPhrase = '', $cipher = self::DEFAULT_CIPHER): string {
+	private function encrypt(string $plainContent, string $iv, string $passPhrase = '', string $cipher = self::DEFAULT_CIPHER): string {
 		$options = $this->useLegacyBase64Encoding ? 0 : OPENSSL_RAW_DATA;
 		$encryptedContent = openssl_encrypt($plainContent,
 			$cipher,
@@ -308,19 +304,11 @@ class Crypt {
 		return self::LEGACY_CIPHER;
 	}
 
-	/**
-	 * @param string $encryptedContent
-	 * @param string $iv
-	 */
-	private function concatIV($encryptedContent, $iv): string {
+	private function concatIV(string $encryptedContent, string $iv): string {
 		return $encryptedContent . '00iv00' . $iv;
 	}
 
-	/**
-	 * @param string $encryptedContent
-	 * @param string $signature
-	 */
-	private function concatSig($encryptedContent, $signature): string {
+	private function concatSig(string $encryptedContent, string $signature): string {
 		return $encryptedContent . '00sig00' . $signature;
 	}
 
@@ -328,10 +316,8 @@ class Crypt {
 	 * Note: This is _NOT_ a padding used for encryption purposes. It is solely
 	 * used to achieve the PHP stream size. It has _NOTHING_ to do with the
 	 * encrypted content and is not used in any crypto primitive.
-	 *
-	 * @param string $data
 	 */
-	private function addPadding($data): string {
+	private function addPadding(string $data): string {
 		return $data . 'xxx';
 	}
 
@@ -511,12 +497,9 @@ class Crypt {
 
 
 	/**
-	 * remove padding
-	 *
-	 * @param string $padded
 	 * @param bool $hasSignature did the block contain a signature, in this case we use a different padding
 	 */
-	private function removePadding($padded, $hasSignature = false): string|false {
+	private function removePadding(string $padded, bool $hasSignature = false): string|false {
 		if ($hasSignature === false && substr($padded, -2) === 'xx') {
 			return substr($padded, 0, -2);
 		} elseif ($hasSignature === true && substr($padded, -3) === 'xxx') {
