@@ -24,6 +24,7 @@
 			:file-info="fileInfo"
 			:is-current="version.mtime === fileInfo.mtime"
 			:is-first-version="version.mtime === initialVersionMtime"
+			@click="openVersion"
 			@restore="handleRestore"
 			@label-update="handleLabelUpdate"
 			@delete="handleDelete" />
@@ -32,6 +33,7 @@
 
 <script>
 import { showError, showSuccess } from '@nextcloud/dialogs'
+
 import { fetchVersions, deleteVersion, restoreVersion, setVersionLabel } from '../utils/versions.js'
 import Version from '../components/Version.vue'
 
@@ -181,6 +183,19 @@ export default {
 		 */
 		resetState() {
 			this.$set(this, 'versions', [])
+		},
+
+		openVersion({ version }) {
+			// Versions previews are too small for our use case, so we override hasPreview and previewUrl
+			// which makes the viewer render the original file.
+			const versions = this.versions.map(version => ({ ...version, hasPreview: false, previewUrl: undefined }))
+
+			OCA.Viewer.open({
+				fileInfo: versions.find(v => v.source === version.source),
+				list: versions,
+				loadMore: () => null,
+				enableSidebar: false,
+			})
 		},
 	},
 }

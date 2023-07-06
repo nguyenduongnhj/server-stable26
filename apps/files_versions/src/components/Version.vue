@@ -19,13 +19,13 @@
 	<div>
 		<NcListItem class="version"
 			:title="versionLabel"
-			:href="downloadURL"
+			@click="click"
 			:force-display-actions="true"
 			data-files-versions-version>
 			<template #icon>
 				<div v-if="!(loadPreview || previewLoaded)" class="version__image" />
 				<img v-else-if="isCurrent || version.hasPreview"
-					:src="previewURL"
+					:src="version.previewUrl"
 					alt=""
 					decoding="async"
 					fetchpriority="low"
@@ -232,20 +232,6 @@ export default {
 			}
 		},
 
-		/**
-		 * @return {string}
-		 */
-		previewURL() {
-			if (this.isCurrent) {
-				return generateUrl('/core/preview?fileId={fileId}&c={fileEtag}&x=250&y=250&forceIcon=0&a=0', {
-					fileId: this.fileInfo.id,
-					fileEtag: this.fileInfo.etag,
-				})
-			} else {
-				return this.version.preview
-			}
-		},
-
 		/** @return {string} */
 		formattedDate() {
 			return moment(this.version.mtime).format('LLL')
@@ -282,6 +268,10 @@ export default {
 		deleteVersion() {
 			this.$emit('delete', this.version)
 		},
+
+		click() {
+			this.$emit('click', { version: this.version })
+		}
 	},
 }
 </script>
