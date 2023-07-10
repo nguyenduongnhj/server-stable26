@@ -207,8 +207,14 @@ class SecurityMiddleware extends Middleware {
 		// CSRF check - also registers the CSRF token since the session may be closed later
 		Util::callRegister();
 		if ($this->isInvalidCSRFRequired($reflectionMethod)) {
-			// CSRF is required and the CSRF check does not pass.
-			// Thus, only allow OCS requests (OCS-APIREQUEST is true or Authorization is Bearer) that go to an OCS controllers.
+			/*
+			 * Only allow the CSRF check to fail on OCS Requests. This kind of
+			 * hacks around that we have no full token auth in place yet and we
+			 * do want to offer CSRF checks for web requests.
+			 *
+			 * Additionally we allow Bearer authenticated requests to pass on OCS routes.
+			 * This allows oauth apps (e.g. moodle) to use the OCS endpoints
+			 */
 			if (!$controller instanceof OCSController || !$this->isValidOCSRequest()) {
 				throw new CrossSiteRequestForgeryException();
 			}
