@@ -225,7 +225,7 @@ class GroupsController extends AUserData {
 					$userId = (string)$user->getUID();
 					$userData = $this->getUserData($userId);
 					// Do not insert empty entry
-					if ($userData != null) {
+					if ($userData !== null) {
 						$usersDetails[$userId] = $userData;
 					} else {
 						// Logged user does not have permissions to see this user

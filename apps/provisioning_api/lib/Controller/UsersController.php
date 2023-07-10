@@ -214,7 +214,7 @@ class UsersController extends AUserData {
 			$userId = (string) $userId;
 			$userData = $this->getUserData($userId);
 			// Do not insert empty entry
-			if ($userData != null) {
+			if ($userData !== null) {
 				$usersDetails[$userId] = $userData;
 			} else {
 				// Logged user does not have permissions to see this user
@@ -558,7 +558,7 @@ class UsersController extends AUserData {
 
 		$data = $this->getUserData($userId, $includeScopes);
 		// getUserData returns null if not enough permissions
-		if ($data == null) {
+		if ($data === null) {
 			throw new OCSException('', OCSController::RESPOND_NOT_FOUND);
 		}
 		return new DataResponse($data);
