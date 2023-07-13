@@ -41,6 +41,5 @@ $tmpl->assign('showgridview', $showgridview);
 \OCP\Util::addScript('files_external', 'rollingqueue');
 
 OCP\Util::addScript('files_external', 'app');
-OCP\Util::addScript('files_external', 'mountsfilelist');
 
 $tmpl->printPage();

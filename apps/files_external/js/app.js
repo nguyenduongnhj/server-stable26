@@ -66,13 +66,6 @@ OCA.Files_External.App = {
 };
 
 window.addEventListener('DOMContentLoaded', function() {
-	$('#app-content-extstoragemounts').on('show', function(e) {
-		OCA.Files_External.App.initList($(e.target));
-	});
-	$('#app-content-extstoragemounts').on('hide', function() {
-		OCA.Files_External.App.removeList();
-	});
-
 	/* Status Manager */
 	if ($('#filesApp').val()) {
 
