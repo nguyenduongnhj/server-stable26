@@ -192,8 +192,8 @@ export default Vue.extend({
 					...this.sortingMode === 'basename' ? [v => v.type !== 'folder'] : [],
 					// Use sorting mode
 					v => v[this.sortingMode],
-					// Finally, fallback to name
-					v => v.basename,
+					// Use displayName if available, fallback to name
+					v => v.attributes?.displayName || v.basename,
 				],
 				this.isAscSorting ? ['asc', 'asc', 'asc'] : ['desc', 'desc', 'desc'],
 			)
