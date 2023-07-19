@@ -57,8 +57,7 @@ use Symfony\Component\EventDispatcher\GenericEvent;
 class AddMissingIndices extends Command {
 	public function __construct(
 		private Connection $connection,
-		private IEventDispatcher $eventDispatcher,
-		private EventDispatcherInterface $dispatcher,
+		private IEventDispatcher $dispatcher,
 	) {
 		parent::__construct();
 	}
@@ -78,7 +77,7 @@ class AddMissingIndices extends Command {
 		$this->dispatcher->dispatch(IDBConnection::ADD_MISSING_INDEXES_EVENT, $event);
 
 		$event = new AddMissingIndicesEvent();
-		$this->eventDispatcher->dispatchTyped($event);
+		$this->dispatcher->dispatchTyped($event);
 
 		$missingIndices = $event->getMissingIndices();
 		if ($missingIndices !== []) {

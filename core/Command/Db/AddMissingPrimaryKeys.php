@@ -51,7 +51,6 @@ use function Symfony\Component\Translation\t;
 class AddMissingPrimaryKeys extends Command {
 	public function __construct(
 		private Connection $connection,
-		private EventDispatcherInterface $legacyDispatcher,
 		private IEventDispatcher $dispatcher,
 	) {
 		parent::__construct();
@@ -68,9 +67,6 @@ class AddMissingPrimaryKeys extends Command {
 		$dryRun = $input->getOption('dry-run');
 
 		// Dispatch event so apps can also update indexes if needed
-		$event = new GenericEvent($output);
-		$this->legacyDispatcher->dispatch(IDBConnection::ADD_MISSING_PRIMARY_KEYS_EVENT, $event);
-
 		$event = new AddMissingPrimaryKeyEvent();
 		$this->dispatcher->dispatchTyped($event);
 		$missingKeys = $event->getMissingPrimaryKeys();
