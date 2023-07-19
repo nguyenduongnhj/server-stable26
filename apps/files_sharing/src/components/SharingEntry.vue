@@ -29,17 +29,22 @@
 			:menu-position="'left'"
 			:url="share.shareWithAvatar" />
 
-		<component :is="share.shareWithLink ? 'a' : 'div'"
-			:title="tooltip"
-			:aria-label="tooltip"
-			:href="share.shareWithLink"
-			class="sharing-entry__desc">
-			<span>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></span>
-			<p v-if="hasStatus">
-				<span>{{ share.status.icon || '' }}</span>
-				<span>{{ share.status.message || '' }}</span>
-			</p>
-		</component>
+        <div class="sharing-entry__summary" @click="openSharingDetails">
+		    <component :is="share.shareWithLink ? 'a' : 'div'"
+			    :title="tooltip"
+			    :aria-label="tooltip"
+			    :href="share.shareWithLink"
+			    class="sharing-entry__desc">
+			    <span>{{ title }}<span v-if="!isUnique" class="sharing-entry__desc-unique"> ({{ share.shareWithDisplayNameUnique }})</span></span>
+			    <p v-if="hasStatus">
+				    <span>{{ share.status.icon || '' }}</span>
+				    <span>{{ share.status.message || '' }}</span>
+			    </p>
+		       </component>
+		    <select class="share-select">
+			    <option>Can edit</option>
+		    </select>
+		</div>
 		<NcActions menu-align="right"
 			class="sharing-entry__actions"
 			@close="onMenuClose">
@@ -456,6 +461,9 @@ export default {
 		onMenuClose() {
 			this.onNoteSubmit()
 		},
+		openSharingDetails() {
+
+		},
 	},
 }
 </script>
@@ -469,7 +477,9 @@ export default {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		// border: 1px solid red;
 		padding: 8px;
+		padding-bottom: 0;
 		line-height: 1.2em;
 		p {
 			color: var(--color-text-maxcontrast);
@@ -481,5 +491,28 @@ export default {
 	&__actions {
 		margin-left: auto;
 	}
+
+	&__summary {
+		padding: 0 !important;
+		display: flex;
+        flex-direction: column;
+		.share-select {
+			appearance: none;
+	        -webkit-appearance: none;
+            -moz-appearance: none;
+			border: none;
+			margin: 0;
+			outline: none;
+			font-size: 12px;
+			height: auto;
+			width: unset;
+			min-height: initial;
+			font-weight: bold;
+			color: var(--color-primary-element);
+		}
+	}
+
 }
+
+
 </style>
