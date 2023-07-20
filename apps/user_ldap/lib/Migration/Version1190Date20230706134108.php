@@ -51,6 +51,11 @@ class Version1190Date20230706134108 extends SimpleMigrationStep {
 
 		if (!$schema->hasTable('ldap_group_membership')) {
 			$table = $schema->createTable('ldap_group_membership');
+			$table->addColumn('id', 'integer', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 4,
+			]);
 			$table->addColumn('groupid', Types::STRING, [
 				'notnull' => true,
 				'length' => 255,
@@ -61,6 +66,7 @@ class Version1190Date20230706134108 extends SimpleMigrationStep {
 				'length' => 64,
 				'default' => '',
 			]);
+			$table->setPrimaryKey(['id']);
 			return $schema;
 		} else {
 			return null;
