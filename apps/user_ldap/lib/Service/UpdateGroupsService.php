@@ -40,6 +40,7 @@ use OCP\DB\Exception;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Group\Events\UserAddedEvent;
 use OCP\Group\Events\UserRemovedEvent;
+use OCP\IGroup;
 use OCP\IGroupManager;
 use OCP\IUser;
 use OCP\IUserManager;
@@ -85,6 +86,7 @@ class UpdateGroupsService {
 		$this->logger->debug('service "updateGroups" – Dealing with known Groups.');
 
 		foreach ($groups as $group) {
+			$this->logger->debug('service "updateGroups" – Dealing with {group}.', ['group' => $group]);
 			$groupMemberships = $this->groupMembershipMapper->findGroupMemberships($group);
 			$knownUsers = array_map(
 				fn (GroupMembership $groupMembership): string => $groupMembership->getUserid(),
