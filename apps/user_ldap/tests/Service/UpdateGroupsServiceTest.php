@@ -6,6 +6,7 @@ declare(strict_types=1);
  * @copyright Copyright (c) 2020 Arthur Schiwon <blizzz@arthur-schiwon.de>
  *
  * @author Arthur Schiwon <blizzz@arthur-schiwon.de>
+ * @author Côme Chilliet <come.chilliet@nextcloud.com>
  * @author Joas Schilling <coding@schilljs.com>
  *
  * @license GNU AGPL version 3 or any later version
@@ -24,12 +25,12 @@ declare(strict_types=1);
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-namespace OCA\user_ldap\tests\Jobs;
+namespace OCA\user_ldap\tests\Service;
 
 use OCA\User_LDAP\Db\GroupMembership;
 use OCA\User_LDAP\Db\GroupMembershipMapper;
 use OCA\User_LDAP\Group_Proxy;
-use OCA\User_LDAP\Jobs\UpdateGroups;
+use OCA\User_LDAP\Service\UpdateGroupsService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Group\Events\UserAddedEvent;
@@ -43,7 +44,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Test\TestCase;
 
-class UpdateGroupsTest extends TestCase {
+class UpdateGroupsServiceTest extends TestCase {
 	/** @var Group_Proxy|MockObject  */
 	protected $groupBackend;
 	/** @var IEventDispatcher|MockObject  */
@@ -61,7 +62,7 @@ class UpdateGroupsTest extends TestCase {
 	/** @var ITimeFactory|MockObject */
 	protected $timeFactory;
 
-	protected UpdateGroups $updateGroupsJob;
+	protected UpdateGroupsService $updateGroupsService;
 
 	public function setUp(): void {
 		$this->groupBackend = $this->createMock(Group_Proxy::class);
@@ -73,7 +74,7 @@ class UpdateGroupsTest extends TestCase {
 		$this->config = $this->createMock(IConfig::class);
 		$this->timeFactory = $this->createMock(ITimeFactory::class);
 
-		$this->updateGroupsJob = new UpdateGroups(
+		$this->updateGroupsService = new UpdateGroupsService(
 			$this->groupBackend,
 			$this->dispatcher,
 			$this->groupManager,
@@ -163,7 +164,7 @@ class UpdateGroupsTest extends TestCase {
 				}
 			});
 
-		$this->invokePrivate($this->updateGroupsJob, 'handleKnownGroups', [$groups]);
+		$this->updateGroupsService->handleKnownGroups($groups);
 
 		$this->assertSame(2, $removedEvents);
 		$this->assertSame(2, $addedEvents);
