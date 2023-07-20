@@ -86,11 +86,12 @@ class AddMissingIndices extends Command {
 					if (!$table->hasIndex($missingIndex['indexName'])) {
 						$output->writeln('<info>Adding additional ' . $missingIndex['indexName'] . ' index to the ' . $table->getName() . ' table, this can take some time...</info>');
 
-						if ($missingIndex['dropUnnamedIndex'])
-						foreach ($table->getIndexes() as $index) {
-							$columns = $index->getColumns();
-							if ($columns === $missingIndex['columns']) {
-								$table->dropIndex($index->getName());
+						if ($missingIndex['dropUnnamedIndex']) {
+							foreach ($table->getIndexes() as $index) {
+								$columns = $index->getColumns();
+								if ($columns === $missingIndex['columns']) {
+									$table->dropIndex($index->getName());
+								}
 							}
 						}
 
