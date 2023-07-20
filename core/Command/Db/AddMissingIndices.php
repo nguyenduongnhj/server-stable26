@@ -73,9 +73,6 @@ class AddMissingIndices extends Command {
 		$dryRun = $input->getOption('dry-run');
 
 		// Dispatch event so apps can also update indexes if needed
-		$event = new GenericEvent($output);
-		$this->dispatcher->dispatch(IDBConnection::ADD_MISSING_INDEXES_EVENT, $event);
-
 		$event = new AddMissingIndicesEvent();
 		$this->dispatcher->dispatchTyped($event);
 
