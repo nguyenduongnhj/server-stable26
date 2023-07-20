@@ -147,12 +147,18 @@ class UpdateGroupsService {
 			$this->logger->info('service "updateGroups" – new group "' . $createdGroup . '" found.');
 
 			$users = $this->groupBackend->usersInGroup($createdGroup);
-			foreach ($users as $user) {
-				$this->groupMembershipMapper->insert(GroupMembership::fromParams(['groupid' => $createdGroup,'userid' => $user]));
-			}
 			$groupObject = $this->groupManager->get($group);
 			if ($groupObject instanceof IGroup) {
 				$this->dispatcher->dispatchTyped(new GroupCreatedEvent($groupObject));
+			}
+			foreach ($users as $user) {
+				$this->groupMembershipMapper->insert(GroupMembership::fromParams(['groupid' => $createdGroup,'userid' => $user]));
+				if ($groupObject instanceof IGroup) {
+					$userObject = $this->userManager->get($user);
+					if ($userObject instanceof IUser) {
+						$this->dispatcher->dispatchTyped(new UserAddedEvent($groupObject, $userObject));
+					}
+				}
 			}
 		}
 		$this->logger->debug('service "updateGroups" – FINISHED dealing with created Groups.');

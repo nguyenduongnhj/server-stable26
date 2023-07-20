@@ -33,6 +33,7 @@ namespace OCA\User_LDAP\Command;
 use OCA\User_LDAP\Helper;
 use OCA\User_LDAP\Mapping\GroupMapping;
 use OCA\User_LDAP\Group_Proxy;
+use OCA\User_LDAP\Service\UpdateGroupsService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -41,6 +42,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckGroup extends Command {
 	public function __construct(
+		private UpdateGroupsService $service,
 		protected Group_Proxy $backend,
 		protected Helper $helper,
 		protected GroupMapping $mapping,
@@ -87,7 +89,7 @@ class CheckGroup extends Command {
 			if ($exists === true) {
 				$output->writeln('The group is still available on LDAP.');
 				if ($input->getOption('update')) {
-					$this->updateGroup($gid, $output);
+					$this->updateGroup($gid, $output, $wasMapped);
 				}
 				return 0;
 			} elseif ($wasMapped) {
@@ -126,23 +128,13 @@ class CheckGroup extends Command {
 		// background job.
 	}
 
-	private function updateGroup(string $gid, OutputInterface $output): void {
+	private function updateGroup(string $gid, OutputInterface $output, bool $wasMapped): void {
 		try {
-			$access = $this->backend->getLDAPAccess($gid);
-			$attrs = $access->userManager->getAttributes();
-			$user = $access->userManager->get($gid);
-			$avatarAttributes = $access->getConnection()->resolveRule('avatar');
-			$result = $access->search('objectclass=*', $user->getDN(), $attrs, 1, 0);
-			foreach ($result[0] as $attribute => $valueSet) {
-				$output->writeln('  ' . $attribute . ': ');
-				foreach ($valueSet as $value) {
-					if (in_array($attribute, $avatarAttributes)) {
-						$value = '{ImageData}';
-					}
-					$output->writeln('    ' . $value);
-				}
+			if ($wasMapped) {
+				$this->service->handleKnownGroups([$gid]);
+			} else {
+				$this->service->handleCreatedGroups([$gid]);
 			}
-			$access->batchApplyUserAttributes($result);
 		} catch (\Exception $e) {
 			$output->writeln('<error>Error while trying to lookup and update attributes from LDAP</error>');
 		}
