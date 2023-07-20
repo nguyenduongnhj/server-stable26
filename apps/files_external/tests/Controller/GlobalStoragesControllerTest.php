@@ -31,9 +31,9 @@ use OCA\Files_External\Service\BackendService;
 use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\IL10N;
-use OCP\ILogger;
 use OCP\IRequest;
 use OCP\IUserSession;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class GlobalStoragesControllerTest extends StoragesControllerTest {
@@ -65,7 +65,7 @@ class GlobalStoragesControllerTest extends StoragesControllerTest {
 			$this->createMock(IRequest::class),
 			$this->createMock(IL10N::class),
 			$this->service,
-			$this->createMock(ILogger::class),
+			$this->createMock(LoggerInterface::class),
 			$session,
 			$this->createMock(IGroupManager::class),
 			$config
