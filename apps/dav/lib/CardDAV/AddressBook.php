@@ -240,6 +240,10 @@ class AddressBook extends \Sabre\CardDAV\AddressBook implements IShareable, IMov
 			return false;
 		}
 
+		if($this->addressBookInfo['principaluri'] === 'principals/system/system') {
+			return true;
+		}
+
 		return $this->addressBookInfo['{http://owncloud.org/ns}owner-principal'] !== $this->addressBookInfo['principaluri'];
 	}
 
