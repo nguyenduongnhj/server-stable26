@@ -223,10 +223,7 @@ class AddressBook extends \Sabre\CardDAV\AddressBook implements IShareable, IMov
 	}
 
 	public function propPatch(PropPatch $propPatch) {
-		// shared address books will be handled by
-		// \OCA\DAV\DAV\CustomPropertiesBackend::propPatch
-		// to save values in db table instead of dav object
-		if (!$this->isShared()) {
+		if (!isset($this->addressBookInfo['{http://owncloud.org/ns}owner-principal'])) {
 			parent::propPatch($propPatch);
 		}
 	}
@@ -238,10 +235,6 @@ class AddressBook extends \Sabre\CardDAV\AddressBook implements IShareable, IMov
 	private function isShared(): bool {
 		if (!isset($this->addressBookInfo['{http://owncloud.org/ns}owner-principal'])) {
 			return false;
-		}
-
-		if($this->addressBookInfo['principaluri'] === 'principals/system/system') {
-			return true;
 		}
 
 		return $this->addressBookInfo['{http://owncloud.org/ns}owner-principal'] !== $this->addressBookInfo['principaluri'];
