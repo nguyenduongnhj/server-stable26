@@ -208,6 +208,11 @@ class Principal implements BackendInterface {
 					'{DAV:}displayname' => $group->getDisplayName(),
 				];
 			}
+		} elseif ($prefix === 'principals/system') {
+			return [
+				'uri' => 'principals/system/' . $name,
+				'{DAV:}displayname' => $name,
+			];
 		}
 		return null;
 	}
