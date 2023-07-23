@@ -47,11 +47,6 @@ Navigation.register({
 				span.textContent = backend
 				return span
 			},
-			sort(nodeA, nodeB) {
-				const nameA = nodeA.attributes?.backend || t('files_external', 'Unknown')
-				const nameB = nodeB.attributes?.backend || t('files_external', 'Unknown')
-				return nameA.localeCompare(nameB, getLanguage(), { ignorePunctuation: true })
-			},
 		},
 		{
 			id: 'scope',
@@ -65,13 +60,12 @@ Navigation.register({
 				span.textContent = scope
 				return span
 			},
-			sort(nodeA, nodeB) {
-				const nameA = nodeA.attributes?.scope
-				const nameB = nodeB.attributes?.scope
-				return nameA.localeCompare(nameB, getLanguage(), { ignorePunctuation: true })
-			},
 		},
 	],
 
 	getContents,
 } as Navigation)
+
+document.addEventListener('DOMContentLoaded', () => {
+
+})

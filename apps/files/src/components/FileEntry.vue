@@ -396,9 +396,14 @@ export default Vue.extend({
 			return this.enabledActions.filter(action => action?.inline?.(this.source, this.currentView))
 		},
 
+		// Enabled action that are displayed inline with a custom render function
+		enabledRenderActions() {
+			return this.enabledActions.filter(action => typeof action.render === 'function')
+		},
+
 		// Default actions
 		enabledDefaultActions() {
-			return this.enabledActions.filter(action => !!action.default)
+			return this.enabledActions.filter(action => !!action?.default)
 		},
 
 		// Actions shown in the menu
@@ -407,7 +412,7 @@ export default Vue.extend({
 				// Showing inline first for the NcActions inline prop
 				...this.enabledInlineActions,
 				// Then the rest
-				...this.enabledActions.filter(action => action.default !== DefaultType.HIDDEN),
+				...this.enabledActions.filter(action => action.default !== DefaultType.HIDDEN && typeof action.render !== 'function'),
 			].filter((value, index, self) => {
 				// Then we filter duplicates to prevent inline actions to be shown twice
 				return index === self.findIndex(action => action.id === value.id)

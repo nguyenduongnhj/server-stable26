@@ -24,7 +24,7 @@ import type { ContentsWithRoot } from '../../../files/src/services/Navigation'
 import type { OCSResponse } from '../../../files_sharing/src/services/SharingService'
 
 import { Folder, Permission } from '@nextcloud/files'
-import { generateOcsUrl, generateRemoteUrl } from '@nextcloud/router'
+import { generateOcsUrl, generateRemoteUrl, generateUrl } from '@nextcloud/router'
 import axios from '@nextcloud/axios'
 import { getCurrentUser } from '@nextcloud/auth'
 
@@ -73,4 +73,9 @@ export const getContents = async (): Promise<ContentsWithRoot> => {
 		}),
 		contents,
 	}
+}
+
+export const getStatus = function(id: number, global = true) {
+	const type = global ? 'userglobalstorages' : 'userstorages'
+	return axios.get(generateUrl(`apps/files_external/${type}/${id}?testOnly=false`)) as Promise<AxiosResponse<OCSResponse<MountEntry>>>
 }

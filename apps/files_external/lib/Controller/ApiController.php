@@ -84,14 +84,15 @@ class ApiController extends OCSController {
 		}
 
 		$entry = [
+			'id' => $mountConfig->getId(),
+			'type' => 'dir',
 			'name' => basename($mountPoint),
 			'path' => $path,
-			'type' => 'dir',
-			'backend' => $mountConfig->getBackend()->getText(),
-			'scope' => $isSystemMount ? 'system' : 'personal',
 			'permissions' => $permissions,
-			'id' => $mountConfig->getId(),
+			'scope' => $isSystemMount ? 'system' : 'personal',
+			'backend' => $mountConfig->getBackend()->getText(),
 			'class' => $mountConfig->getBackend()->getIdentifier(),
+			'config' => $mountConfig->jsonSerialize(),
 		];
 		return $entry;
 	}
