@@ -25,7 +25,7 @@
 		:title="t('files', 'Files settings')"
 		@update:open="onClose">
 		<!-- Settings API-->
-		<NcAppSettingsSection id="settings" :title="t('files', 'Files settings')">
+		<NcAppSettingsSection id="settings" :name="t('files', 'Files settings')">
 			<NcCheckboxRadioSwitch :checked="userConfig.sort_favorites_first"
 				@update:checked="setConfig('sort_favorites_first', $event)">
 				{{ t('files', 'Sort favorites first') }}
@@ -50,7 +50,7 @@
 		</NcAppSettingsSection>
 
 		<!-- Webdav URL-->
-		<NcAppSettingsSection id="webdav" :title="t('files', 'WebDAV')">
+		<NcAppSettingsSection id="webdav" :name="t('files', 'WebDAV')">
 			<NcInputField id="webdav-url-input"
 				:show-trailing-button="true"
 				:success="webdavUrlCopied"
