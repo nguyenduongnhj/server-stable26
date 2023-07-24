@@ -64,6 +64,7 @@
 				:spellchecking="false"
 				:autocomplete="autoCompleteAllowed ? 'username' : 'off'"
 				required
+				:readonly="!skipVerifyToken"
 				data-login-form-input-user
 				@change="updateUsername" />
 
@@ -153,6 +154,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		skipVerifyToken: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -217,6 +222,9 @@ export default {
 			this.$emit('update:username', this.user)
 		},
 		submit() {
+			if (!this.skipVerifyToken) {
+				this.user = this.username
+			}
 			this.loading = true
 			this.$emit('submit')
 		},

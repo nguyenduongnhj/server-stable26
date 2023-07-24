@@ -73,6 +73,9 @@
 <div class="hiddenuploadfield">
 	<input type="file" id="file_upload_start" class="hiddenuploadfield" name="files[]" />
 </div>
+<div class="hiddenuploadfield">
+	<input type="submit" id="private_file_upload_start" class="hiddenuploadfield" name="files[]" />
+</div>
 <div id="uploadsize-message" title="<?php p($l->t('Upload too large'))?>">
 	<p>
 	<?php p($l->t('The files you are trying to upload exceed the maximum size for file uploads on this server.'));?>

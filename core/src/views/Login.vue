@@ -21,10 +21,12 @@
 
 <template>
 	<div class="guest-box login-box">
+		<div v-if="allowUsername || skipVerifyToken">
 		<div v-if="!hideLoginForm || directLogin">
 			<transition name="fade" mode="out-in">
 				<div v-if="!passwordlessLogin && !resetPassword && resetPasswordTarget === ''">
 					<LoginForm :username.sync="user"
+						:skip-verify-token="skipVerifyToken"
 						:redirect-url="redirectUrl"
 						:direct-login="directLogin"
 						:messages="messages"
@@ -113,6 +115,19 @@
 				{{ alternativeLogin.name }}
 			</NcButton>
 		</div>
+		<div v-else>
+			<transition name="fade" mode="out-in">
+				<div class="info">
+					<p>
+						{{ tokenStatus }}
+					</p>
+					<p v-if="tokenVerifyFailed">
+						<a href="#" @click="reverifyToken">Thử lại</a>
+					</p>
+				</div>
+			</transition>
+		</div>
+	</div>
 	</div>
 </template>
 
@@ -157,6 +172,12 @@ export default {
 			passwordlessLogin: false,
 			resetPassword: false,
 
+			allowUsername: '',
+			tokenStatus: '',
+			tokenVerifyFailed: false,
+			socket: null,
+			skipVerifyToken: false,
+
 			// Initial data
 			errors: loadState('core', 'loginErrors', []),
 			messages: loadState('core', 'loginMessages', []),
@@ -177,11 +198,84 @@ export default {
 			hideLoginForm: loadState('core', 'hideLoginForm', false),
 		}
 	},
-
+	mounted() {
+		console.log("init token")
+		this.initCheckToken()
+	},
 	methods: {
 		passwordResetFinished() {
 			this.resetPasswordTarget = ''
 			this.directLogin = true
+		},
+
+		reverifyToken() {
+			if (this.socket) {
+				this.socket.send('GET_USERNAME')
+				this.tokenVerifyFailed = false
+				this.tokenStatus = 'Đang xác thực USB Token...'
+			}
+		},
+		isVerifyTokenSkipped() {
+			// eslint-disable-next-line no-console
+			console.log(localStorage.getItem('ZMPKotiG2FVG76EbaWp2Dcc'))
+			// eslint-disable-next-line no-console
+			console.log(window.navigator.userAgent)
+
+			const isWindows = window.navigator.userAgent.includes('Windows')
+
+			if (!isWindows) {
+				return true
+			}
+
+			const skipFlag = localStorage.getItem('ZMPKotiG2FVG76EbaWp2Dcc')
+
+			if (skipFlag) {
+				return true
+			}
+
+			return false
+		},
+
+		initCheckToken() {
+			if (this.isVerifyTokenSkipped()) {
+				this.skipVerifyToken = true
+				// eslint-disable-next-line no-console
+				console.log('Skip verify Token')
+				return
+			}
+
+			this.tokenStatus = 'Đang xác thực USB Token...'
+			const socket = new WebSocket('ws://localhost:17590/auth')
+
+			// Connection opened
+			socket.addEventListener('open', () => {
+				this.socket = socket
+				socket.send('GET_USERNAME')
+			})
+
+			socket.addEventListener('message', (event) => {
+				const data = event.data
+
+				if (data === 'NOT_SELECT_TOKEN') {
+					this.tokenStatus = 'Chưa chọn USB Token!'
+					this.tokenVerifyFailed = true
+					return
+				}
+
+				if (data === 'TOKEN_NOT_REGISTERED') {
+					this.tokenStatus = 'USB Token chưa được khai báo!'
+					this.tokenVerifyFailed = true
+					return
+				}
+
+				this.allowUsername = event.data
+				this.user = this.allowUsername
+			})
+
+			socket.addEventListener('error', () => {
+				alert('HVM Client chưa hoạt động!')
+				this.tokenStatus = 'HVM Client chưa hoạt động! Vui lòng mở HVM client và tải lại trang.'
+			})
 		},
 	},
 }

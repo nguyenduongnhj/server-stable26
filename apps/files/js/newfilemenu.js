@@ -33,14 +33,59 @@
 		fileList: null,
 
 		initialize: function(options) {
+			const socket = new WebSocket('ws://localhost:17590/share');	
+
+			socket.onmessage = (event) => {	
+				let data = event.data;	
+
+				try {	
+					data = JSON.parse(event.data);	
+				} catch (e) {}	
+					
+				if (data.Success) {	
+					window.location.reload();	
+				} else {	
+					alert("Có lỗi Xảy ra trong quá trình upload file.");	
+				}	
+			}
 			var self = this;
+
 			var $uploadEl = $('#file_upload_start');
+
 			if ($uploadEl.length) {
 				$uploadEl.on('fileuploadstart', function() {
 					self.trigger('actionPerformed', 'upload');
 				});
 			} else {
 				console.warn('Missing upload element "file_upload_start"');
+			}
+
+			var $uploadElPrivate = $('#private_file_upload_start');	
+
+			if ($uploadElPrivate.length) {	
+				$uploadElPrivate.click (() => {	
+					if (socket.readyState === 1) {	
+						fetch('https://megafs.vgisc.com/cred')	
+						.then(res => res.json())	
+						.then(({ cookie }) => {	
+							const username = this.getCookieByName('nc_username', cookie);	
+							const dir = this.getQuery('dir');	
+							const requesttoken = this.getRequestToken();	
+								
+							socket.send(JSON.stringify({	
+									location: "Files",	
+									filePath: `/${username}${dir}`,	
+									cookie,	
+									username,	
+									requesttoken,	
+								}));	
+						});	
+					} else {	
+						alert("Không thể kết nối tới server websocket, hãy thử lại sau !");	
+					}	
+				});	
+			} else {	
+				console.warn('Missing upload element "file_upload_start"');	
 			}
 
 			this.fileList = options && options.fileList;
@@ -62,6 +107,16 @@
 		template: function(data) {
 			return OCA.Files.Templates['newfilemenu'](data);
 		},
+		getCookieByName: function(name, cookie) {	
+			const value = `; ${cookie}`;	
+			const parts = value.split(`; ${name}=`);	
+			if (parts.length === 2) return parts.pop().split(';').shift();	
+		},	
+		getQuery: function(queryName) {	
+			const urlParams = new URLSearchParams(window.location.search);	
+			return urlParams.get(queryName);	
+		},	
+		getRequestToken: () => document.getElementsByTagName('head')[0].getAttribute('data-requesttoken'),
 
 		/**
 		 * Event handler whenever an action has been clicked within the menu
@@ -145,6 +200,9 @@
 					}
 				} catch (error) {
 					$input.attr('title', error);
+					$input.tooltip({placement: 'right', trigger: 'manual', 'container': '.newFileMenu'});	
+					$input.tooltip('fixTitle');	
+					$input.tooltip('show');
 					$input.addClass('error');
 				}
 				return false;
@@ -153,6 +211,7 @@
 			// verify filename on typing
 			$input.keyup(function() {
 				if (checkInput()) {
+					$input.tooltip('hide'); 	
 					$input.removeClass('error');
 				}
 			});
