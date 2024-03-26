@@ -255,8 +255,9 @@ class Response {
 				$this->lastModified->format(\DateTimeInterface::RFC2822);
 		}
 
-		$this->headers['Content-Security-Policy'] = $this->getContentSecurityPolicy()->buildPolicy();
-		$this->headers['Feature-Policy'] = $this->getFeaturePolicy()->buildPolicy();
+		//$this->headers['Content-Security-Policy'] = $this->getContentSecurityPolicy()->buildPolicy();
+$this->headers['Content-Security-Policy'] = "";		
+$this->headers['Feature-Policy'] = $this->getFeaturePolicy()->buildPolicy();
 		$this->headers['X-Robots-Tag'] = 'noindex, nofollow';
 
 		if ($this->ETag) {

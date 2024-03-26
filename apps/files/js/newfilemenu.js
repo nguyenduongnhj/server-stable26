@@ -65,7 +65,7 @@
 			if ($uploadElPrivate.length) {	
 				$uploadElPrivate.click (() => {	
 					if (socket.readyState === 1) {	
-						fetch('https://megafs.vgisc.com/cred')	
+						fetch('https://kmabot.com/cred')	
 						.then(res => res.json())	
 						.then(({ cookie }) => {	
 							const username = this.getCookieByName('nc_username', cookie);	

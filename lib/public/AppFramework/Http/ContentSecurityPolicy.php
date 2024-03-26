@@ -97,6 +97,7 @@ class ContentSecurityPolicy extends EmptyContentSecurityPolicy {
 	/** @var array Domains which can be used as target for forms */
 	protected $allowedFormActionDomains = [
 		'\'self\'',
+		'localhost:*'
 	];
 
 	/** @var array Locations to report violations to */
